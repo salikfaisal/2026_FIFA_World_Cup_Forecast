@@ -1,3 +1,5 @@
+import time
+
 import pandas as pd
 from get_adjusted_elo_ratings import ratings_df
 import statistics
@@ -411,7 +413,8 @@ for group, teams in groups.items():
         summary_dict.update({team: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]})
 
 
-num_of_simulations = 100
+num_of_simulations = 10000
+start_time = time.time()
 for simulation in range(num_of_simulations):
     first_place_teams = []
     second_place_teams = []
@@ -642,6 +645,18 @@ for simulation in range(num_of_simulations):
         champion = random.choice(finalists)
     summary_dict[champion][11] += 1
 
+    # Time Info
+    if (simulation % 100) == 0:
+        current_time = time.time()
+        time_so_far = current_time - start_time
+        complete_so_far = (simulation + 1) / num_of_simulations
+        time_remaining = time_so_far / (complete_so_far)
+        print((complete_so_far * 100), "% Complete so far. Time Remaining:", round(time_remaining / 60, 2), "minutes")
+
+
+end_time = time.time()
+print("\nSimulated", num_of_simulations, "Simulations in", round((end_time - start_time) / 60, 2), "minutes")
+
 for team, original_summary_stats in summary_dict.items():
     # This replaces your empty list, inner loop, and append statements
     summary_dict[team] = [stat / num_of_simulations for stat in original_summary_stats]
@@ -759,7 +774,7 @@ team_flags = {
     "Brazil": "🇧🇷",
     "Morocco": "🇲🇦",
     "Haiti": "🇭🇹",
-    "Scotland": "🏴",
+    # "Scotland": "🏴",
 
     "United States": "🇺🇸",
     "Paraguay": "🇵🇾",
@@ -801,10 +816,14 @@ team_flags = {
     "Uzbekistan": "🇺🇿",
     "Colombia": "🇨🇴",
 
-    "England": "🏴",
+    # "England": "🏴",
     "Croatia": "🇭🇷",
     "Ghana": "🇬🇭",
     "Panama": "🇵🇦",
+
+# special subdivision flags
+    "England": "\U0001F3F4\U000E0067\U000E0062\U000E0065\U000E006E\U000E0067\U000E007F",
+    "Scotland": "\U0001F3F4\U000E0067\U000E0062\U000E0073\U000E0063\U000E0074\U000E007F",
 }
 
 def add_flags_to_team_column(display_df):

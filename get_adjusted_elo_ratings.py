@@ -1,6 +1,8 @@
 import pandas as pd
 from get_xg_elo_ratings import xg_elo_dict
 
+print("Getting Adjusted Elo Ratings\n")
+
 # Import Elo and SOFIFA data
 elo_df = pd.read_csv("elo_ratings.csv")
 
@@ -73,3 +75,5 @@ ratings_df = ratings_df[["Rank", "Team",  "Adjusted Elo Rating", "Elo Rating", "
 
 ratings_df = ratings_df.head(48)
 ratings_df.to_csv("Adjusted Elo Ratings.csv", index=False, encoding="utf-8-sig")
+
+print("Finished Getting Adjusted Elo Ratings\n")
