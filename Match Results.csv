@@ -1,0 +1,104 @@
+﻿Match,Group/Stage,Home Team,Away Team,Home Goals,Away Goals,Home xG,Away xG,Country of Venue
+1,A,Mexico,South Africa,2,0,1.46,0.07,Mexico
+2,A,South Korea,Czechia,2,1,2.3,0.83,Mexico
+3,B,Canada,Bosnia & Herzegovina,1,1,1.23,0.96,Canada
+4,D,United States,Paraguay,4,1,1.42,0.53,United States
+5,B,Qatar,Switzerland,1,1,0.6,3.2,United States
+6,C,Brazil,Morocco,1,1,1.26,1.37,United States
+7,C,Haiti,Scotland,0,1,1.05,1.05,United States
+8,D,Australia,Turkey,2,0,1.18,1.36,Canada
+9,E,Germany,Curacao,7,1,4.22,0.41,United States
+10,F,Netherlands,Japan,2,2,0.78,0.59,United States
+11,E,Ivory Coast,Ecuador,1,0,1.52,1.01,United States
+12,F,Sweden,Tunisia,5,1,1.33,0.28,Mexico
+13,H,Spain,Cape Verde,0,0,2.1,0.2,United States
+14,G,Belgium,Egypt,1,1,1.35,1.08,United States
+15,H,Saudi Arabia,Uruguay,1,1,0.66,1.72,United States
+16,G,Iran,New Zealand,2,2,1.5,1.24,United States
+17,I,France,Senegal,3,1,1.79,0.56,United States
+18,I,Iraq,Norway,1,4,0.8,2.52,United States
+19,J,Argentina,Algeria,3,0,1.26,0.32,United States
+20,J,Austria,Jordan,3,1,1.69,0.46,United States
+21,K,Portugal,DR Congo,1,1,0.65,0.87,United States
+22,L,England,Croatia,4,2,3.34,0.7,United States
+23,L,Ghana,Panama,1,0,1.25,0.73,Canada
+24,K,Uzbekistan,Colombia,1,3,1.16,1.61,Mexico
+25,A,Czechia,South Africa,1,1,1.02,1.39,United States
+26,B,Switzerland,Bosnia & Herzegovina,4,1,2.06,0.23,United States
+27,B,Canada,Qatar,6,0,4.6,0.22,Canada
+28,A,Mexico,South Korea,1,0,0.53,0.91,Mexico
+29,D,United States,Australia,2,0,1.08,0.35,United States
+30,C,Scotland,Morocco,0,1,0.51,0.99,United States
+31,C,Brazil,Haiti,3,0,1.75,0.24,United States
+32,D,Turkey,Paraguay,0,1,2.17,0.32,United States
+33,F,Netherlands,Sweden,5,1,2.61,1.01,United States
+34,E,Germany,Ivory Coast,2,1,1.83,1.23,Canada
+35,E,Ecuador,Curacao,,,,,United States
+36,F,Tunisia,Japan,,,,,Mexico
+37,H,Spain,Saudi Arabia,,,,,United States
+38,G,Belgium,Iran,,,,,United States
+39,H,Uruguay,Cape Verde,,,,,United States
+40,G,New Zealand,Egypt,,,,,Canada
+41,J,Argentina,Austria,,,,,United States
+42,I,France,Iraq,,,,,United States
+43,I,Norway,Senegal,,,,,United States
+44,J,Jordan,Algeria,,,,,United States
+45,L,England,Ghana,,,,,United States
+46,L,Panama,Croatia,,,,,Canada
+47,K,Portugal,Uzbekistan,,,,,United States
+48,K,Colombia,DR Congo,,,,,Mexico
+49,C,Scotland,Brazil,,,,,United States
+50,C,Morocco,Haiti,,,,,United States
+51,B,Switzerland,Canada,,,,,Canada
+52,B,Bosnia & Herzegovina,Qatar,,,,,United States
+53,A,Czechia,Mexico,,,,,Mexico
+54,A,South Africa,South Korea,,,,,Mexico
+55,E,Curacao,Ivory Coast,,,,,United States
+56,E,Ecuador,Germany,,,,,United States
+57,F,Japan,Sweden,,,,,United States
+58,F,Tunisia,Netherlands,,,,,United States
+59,D,Turkey,United States,,,,,United States
+60,D,Paraguay,Australia,,,,,United States
+61,G,Egypt,Iran,,,,,United States
+62,G,New Zealand,Belgium,,,,,Canada
+63,H,Cape Verde,Saudi Arabia,,,,,United States
+64,H,Uruguay,Spain,,,,,Mexico
+65,I,Norway,France,,,,,United States
+66,I,Senegal,Iraq,,,,,Canada
+67,J,Algeria,Austria,,,,,United States
+68,J,Jordan,Argentina,,,,,United States
+69,K,Colombia,Portugal,,,,,United States
+70,K,DR Congo,Uzbekistan,,,,,United States
+71,L,Panama,England,,,,,United States
+72,L,Croatia,Ghana,,,,,United States
+1,R32,,,,,,,United States
+2,R32,,,,,,,United States
+3,R32,,,,,,,United States
+4,R32,,,,,,,Mexico
+5,R32,,,,,,,Canada
+6,R32,,,,,,,United States
+7,R32,,,,,,,United States
+8,R32,,,,,,,United States
+9,R32,,,,,,,United States
+10,R32,,,,,,,United States
+11,R32,,,,,,,Mexico
+12,R32,,,,,,,United States
+13,R32,,,,,,,United States
+14,R32,,,,,,,United States
+15,R32,,,,,,,Canada
+16,R32,,,,,,,United States
+1,R16,,,,,,,United States
+2,R16,,,,,,,United States
+3,R16,,,,,,,United States
+4,R16,,,,,,,United States
+5,R16,,,,,,,United States
+6,R16,,,,,,,Mexico
+7,R16,,,,,,,United States
+8,R16,,,,,,,Canada
+1,QF,,,,,,,United States
+2,QF,,,,,,,United States
+3,QF,,,,,,,United States
+4,QF,,,,,,,United States
+1,SF,,,,,,,United States
+2,SF,,,,,,,United States
+1,Final,,,,,,,United States
