@@ -422,6 +422,74 @@ for group, teams in groups.items():
         summary_dict.update({team: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]})
 
 
+def add_one_to_dict(dictionary, key):
+    # Adds 1 to a dictionary count.
+    # If the key does not exist yet, start it at 1.
+
+    if key not in dictionary:
+        dictionary[key] = 0
+
+    dictionary[key] += 1
+
+bracket_round_sizes = {
+    "Round of 32": 16,
+    "Round of 16": 8,
+    "Quarterfinals": 4,
+    "Semifinals": 2,
+    "Final": 1,
+}
+
+bracket_matchup_counts = {}
+bracket_matchup_winner_counts = {}
+
+for round_name, number_of_matches in bracket_round_sizes.items():
+    bracket_matchup_counts[round_name] = []
+    bracket_matchup_winner_counts[round_name] = []
+
+    for _ in range(number_of_matches):
+        bracket_matchup_counts[round_name].append({})
+        bracket_matchup_winner_counts[round_name].append({})
+
+def record_bracket_round(round_name, matchups, winners):
+    # Records which matchups happened in each bracket slot
+    # and who won those matchups.
+    #
+    # matchups example:
+    # [
+    #     ["Argentina", "Croatia"],
+    #     ["France", "Mexico"],
+    # ]
+    #
+    # winners example:
+    # [
+    #     "Argentina",
+    #     "France",
+    # ]
+
+    for match_index, matchup in enumerate(matchups):
+        team_1 = matchup[0]
+        team_2 = matchup[1]
+        winner = winners[match_index]
+
+        # Keep the matchup in bracket order.
+        # Do not sort alphabetically, because bracket order matters visually.
+        matchup_key = (team_1, team_2)
+
+        # Count how often this matchup appears in this exact bracket slot.
+        add_one_to_dict(
+            bracket_matchup_counts[round_name][match_index],
+            matchup_key
+        )
+
+        # Now count who wins when this exact matchup happens.
+        if matchup_key not in bracket_matchup_winner_counts[round_name][match_index]:
+            bracket_matchup_winner_counts[round_name][match_index][matchup_key] = {}
+
+        add_one_to_dict(
+            bracket_matchup_winner_counts[round_name][match_index][matchup_key],
+            winner
+        )
+
 num_of_simulations = 10000
 start_time = time.time()
 for simulation in range(num_of_simulations):
@@ -531,6 +599,7 @@ for simulation in range(num_of_simulations):
                 octofinalists[matchup_number] = away_team
             else:
                 octofinalists[matchup_number] = random.choice(matchup)
+    record_bracket_round("Round of 32", round_of_32_matchups, octofinalists)
 
     round_of_16_matchups = []
     matchup = []
@@ -563,6 +632,7 @@ for simulation in range(num_of_simulations):
                 quarterfinalists[matchup_number] = away_team
             else:
                 quarterfinalists[matchup_number] = random.choice(matchup)
+    record_bracket_round("Round of 16", round_of_16_matchups, quarterfinalists)
 
     quarterfinal_matchups = []
     matchup = []
@@ -597,6 +667,7 @@ for simulation in range(num_of_simulations):
                 semifinalists[matchup_number] = away_team
             else:
                 semifinalists[matchup_number] = random.choice(matchup)
+    record_bracket_round("Quarterfinals", quarterfinal_matchups, semifinalists)
 
     semifinal_matchups = []
     matchup = []
@@ -631,6 +702,7 @@ for simulation in range(num_of_simulations):
                 finalists[matchup_number] = away_team
             else:
                 finalists[matchup_number] = random.choice(matchup)
+    record_bracket_round("Semifinals", semifinal_matchups, finalists)
 
     # Final
     home_team = finalists[0]
@@ -653,6 +725,7 @@ for simulation in range(num_of_simulations):
     else:
         champion = random.choice(finalists)
     summary_dict[champion][11] += 1
+    record_bracket_round("Final", [finalists], [champion])
 
     # Time Info
     if (simulation % 100) == 0:
@@ -666,6 +739,57 @@ for simulation in range(num_of_simulations):
 end_time = time.time()
 print("\nSimulated", num_of_simulations, "Simulations in", round((end_time - start_time) / 60, 2), "minutes")
 
+
+# Gets the Most Likely Bracket
+most_likely_bracket_rows = []
+
+for round_name, matchup_count_list in bracket_matchup_counts.items():
+    for match_index, matchup_counts in enumerate(matchup_count_list):
+        # If no matchups were recorded, skip.
+        if len(matchup_counts) == 0:
+            continue
+
+        # Find the most common matchup in this bracket slot.
+        most_likely_matchup = max(
+            matchup_counts,
+            key=matchup_counts.get
+        )
+
+        matchup_count = matchup_counts[most_likely_matchup]
+
+        team_1 = most_likely_matchup[0]
+        team_2 = most_likely_matchup[1]
+
+        # Find the most common winner of that exact matchup.
+        winner_counts = bracket_matchup_winner_counts[round_name][match_index][most_likely_matchup]
+
+        most_likely_winner = max(
+            winner_counts,
+            key=winner_counts.get
+        )
+
+        winner_count = winner_counts[most_likely_winner]
+
+        most_likely_bracket_rows.append({
+            "Round": round_name,
+            "Match": match_index + 1,
+            "Team 1": team_1,
+            "Team 2": team_2,
+            "Most Likely Winner": most_likely_winner,
+
+            # How often this matchup appeared in this bracket slot.
+            "Matchup Frequency": matchup_count / num_of_simulations,
+
+            # How often the listed winner won when this matchup happened.
+            "Winner Given Matchup": winner_count / matchup_count,
+        })
+
+most_likely_bracket_df = pd.DataFrame(most_likely_bracket_rows)
+
+most_likely_bracket_df.to_csv("Most Likely Bracket.csv", index=False,encoding="utf-8-sig")
+
+
+# Gets the corrected stats by dividing by number of simulations to get averages and probabilities
 for team, original_summary_stats in summary_dict.items():
     # This replaces your empty list, inner loop, and append statements
     summary_dict[team] = [stat / num_of_simulations for stat in original_summary_stats]
@@ -870,6 +994,23 @@ def add_flags_to_team_column(display_df):
 
     return display_df
 
+def add_flags_to_bracket_columns(display_df):
+    display_df = display_df.copy()
+
+    bracket_team_columns = [
+        "Team 1",
+        "Team 2",
+        "Most Likely Winner",
+    ]
+
+    for column in bracket_team_columns:
+        if column in display_df.columns:
+            display_df[column] = display_df[column].apply(
+                lambda team: f"{team_flags.get(team, '')} {team}"
+            )
+
+    return display_df
+
 def format_display_df(display_df):
     display_df = display_df.copy()
 
@@ -904,38 +1045,98 @@ def format_display_df(display_df):
 
     return display_df
 
+def build_visual_bracket_html(most_likely_bracket_df):
+    # Builds a visual bracket using the most likely matchup in each bracket slot.
+
+    round_order = [
+        "Round of 32",
+        "Round of 16",
+        "Quarterfinals",
+        "Semifinals",
+        "Final",
+    ]
+
+    bracket_html = """
+    <div class="bracket-container">
+    """
+
+    for round_name in round_order:
+        round_df = most_likely_bracket_df[
+            most_likely_bracket_df["Round"] == round_name
+        ].copy()
+
+        round_df = round_df.sort_values(by="Match")
+
+        bracket_html += f"""
+        <div class="bracket-round">
+            <h3>{round_name}</h3>
+        """
+
+        for _, row in round_df.iterrows():
+            team_1 = row["Team 1"]
+            team_2 = row["Team 2"]
+            winner = row["Most Likely Winner"]
+
+            team_1_display = f"{team_flags.get(team_1, '')} {team_1}"
+            team_2_display = f"{team_flags.get(team_2, '')} {team_2}"
+            winner_display = f"{team_flags.get(winner, '')} {winner}"
+
+            matchup_frequency = row["Matchup Frequency"] * 100
+            winner_given_matchup = row["Winner Given Matchup"] * 100
+
+            bracket_html += f"""
+            <div class="bracket-match">
+                <div class="bracket-match-number">Match {row["Match"]}</div>
+
+                <div class="bracket-team">{team_1_display}</div>
+                <div class="bracket-team">{team_2_display}</div>
+
+                <div class="bracket-winner">
+                    Winner: <strong>{winner_display}</strong>
+                </div>
+
+                <div class="bracket-small-text">
+                    Matchup: {matchup_frequency:.1f}% | Winner: {winner_given_matchup:.1f}%
+                </div>
+            </div>
+            """
+
+        bracket_html += """
+        </div>
+        """
+
+    bracket_html += """
+    </div>
+    """
+
+    return bracket_html
+
 
 DOCS_FOLDER = Path("docs")
 DOCS_FOLDER.mkdir(exist_ok=True)
 
 
-def create_html_page(title, subtitle, body_html, use_datatables=True):
+def create_html_page(title, subtitle, body_html, use_datatables=False):
     # Creates a full HTML page.
-
-    datatables_head_html = ""
 
     if use_datatables:
         datatables_head_html = """
-    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
-    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
-"""
+        <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
 
-    datatables_script_html = ""
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+        """
 
-    if use_datatables:
         datatables_script_html = """
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll(".searchable-table").forEach(function(table) {
-                new DataTable(table, {
+        <script>
+            $(document).ready(function () {
+                $(".searchable-table").DataTable({
                     pageLength: 25,
                     order: [],
                     autoWidth: false
                 });
-            });
 
-            document.querySelectorAll(".group-table").forEach(function(table) {
-                new DataTable(table, {
+                $(".group-table").DataTable({
                     paging: false,
                     searching: false,
                     info: false,
@@ -943,9 +1144,11 @@ def create_html_page(title, subtitle, body_html, use_datatables=True):
                     autoWidth: false
                 });
             });
-        });
-    </script>
-"""
+        </script>
+        """
+    else:
+        datatables_head_html = ""
+        datatables_script_html = ""
 
     return f"""
 <!DOCTYPE html>
@@ -965,7 +1168,8 @@ def create_html_page(title, subtitle, body_html, use_datatables=True):
             <a href="index.html">Home</a>
             <a href="group-stage.html">Group Stage</a>
             <a href="knockout-stage.html">Knockout Stage</a>
-            <a href="{GITHUB_REPO_URL}" target="_blank">GitHub</a>
+            <a href="bracket.html">Most Likely Bracket</a>
+            <a href="{GITHUB_REPO_URL}" target="_blank">Methodology</a>
         </nav>
 
         <p class="subtitle">{subtitle}</p>
@@ -979,7 +1183,7 @@ def create_html_page(title, subtitle, body_html, use_datatables=True):
         <footer>
             <p>
                 Last updated: {LAST_UPDATED} |
-                <a href="{GITHUB_REPO_URL}" target="_blank">View Methodology on GitHub</a>
+                <a href="{GITHUB_REPO_URL}" target="_blank">Methodology</a>
             </p>
         </footer>
     </main>
@@ -1078,6 +1282,64 @@ with open(DOCS_FOLDER / "knockout-stage.html", "w", encoding="utf-8") as file:
     file.write(knockout_stage_html)
 
 
+
+# Bracket Display html
+bracket_display_df = most_likely_bracket_df.copy()
+
+# Add flags to team columns
+bracket_display_df = add_flags_to_bracket_columns(bracket_display_df)
+
+# Format probability columns
+bracket_percentage_columns = [
+    "Matchup Frequency",
+    "Winner Given Matchup",
+]
+
+for column in bracket_percentage_columns:
+    if column in bracket_display_df.columns:
+        bracket_display_df[column] = bracket_display_df[column].apply(
+            lambda value: f"{value * 100:.1f}%"
+        )
+
+# Convert to HTML table
+bracket_table_html = bracket_display_df.to_html(
+    index=False,
+    classes=["results-table", "searchable-table"],
+    border=0,
+    escape=False
+)
+
+visual_bracket_html = build_visual_bracket_html(most_likely_bracket_df)
+
+bracket_body_html = f"""
+<section>
+    <h2>Most Likely Bracket</h2>
+
+    <p class="page-note">
+        This visual bracket shows the most common matchup in each knockout slot across
+        {num_of_simulations:,} simulations. The winner listed is the team that most often
+        won that specific matchup when it occurred.
+        <br><br>
+        This bracket should not be read as one single simulated tournament path.
+        Each matchup slot is based on the most common outcome for that specific slot
+        across all simulations. Because of that, winners from earlier rounds may not
+        always line up perfectly with the most likely matchups shown in later rounds.
+    </p>
+
+    {visual_bracket_html}
+</section>
+"""
+
+bracket_html = create_html_page(
+    title="2026 FIFA World Cup Most Likely Bracket",
+    subtitle=f"Most common knockout matchups from {num_of_simulations:,} simulations.",
+    body_html=bracket_body_html,
+    use_datatables=False
+)
+
+with open(DOCS_FOLDER / "bracket.html", "w", encoding="utf-8") as file:
+    file.write(bracket_html)
+
 # Index Page
 
 champion_card_html = build_champion_card(knockout_stage_df)
@@ -1099,7 +1361,8 @@ index_html = f"""
             <a href="index.html">Home</a>
             <a href="group-stage.html">Group Stage</a>
             <a href="knockout-stage.html">Knockout Stage</a>
-            <a href="{GITHUB_REPO_URL}" target="_blank">Methodology on GitHub</a>
+            <a href="bracket.html">Most Likely Bracket</a>
+            <a href="{GITHUB_REPO_URL}" target="_blank">Methodology</a>
         </nav>
 
         <p class="subtitle">
@@ -1117,7 +1380,7 @@ index_html = f"""
             <a class="card" href="group-stage.html">
                 <h2>Group Stage Forecast</h2>
                 <p>
-                    Average points, goal difference, group finish probabilities,
+                    Average Points, Goal Difference, Group Finish Probabilities,
                     and Round of 32 chances.
                 </p>
             </a>
@@ -1126,7 +1389,15 @@ index_html = f"""
                 <h2>Knockout Stage Forecast</h2>
                 <p>
                     Chances of reaching the Round of 32, Round of 16,
-                    quarterfinals, semifinals, final, and winning the World Cup.
+                    Quarterfinals, Semifinals, Final, and Winning the World Cup.
+                </p>
+            </a>
+            
+            <a class="card" href="bracket.html">
+                <h2>Most Likely Bracket</h2>
+                <p>
+                    The most common knockout matchups by bracket slot, along with the most
+                    likely winner of each matchup.
                 </p>
             </a>
         </section>
@@ -1134,7 +1405,7 @@ index_html = f"""
         <footer>
             <p>
                 Last updated: {LAST_UPDATED} |
-                <a href="{GITHUB_REPO_URL}" target="_blank">View Methodology on GitHub</a>
+                <a href="{GITHUB_REPO_URL}" target="_blank">Methodology</a>
             </p>
         </footer>
     </main>
@@ -1193,6 +1464,7 @@ nav a:hover {
     margin-bottom: 32px;
 }
 
+/* Homepage champion card */
 .champion-card-section {
     margin-bottom: 28px;
 }
@@ -1225,6 +1497,31 @@ nav a:hover {
     margin-bottom: 0;
 }
 
+/* Homepage cards */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    display: block;
+    padding: 22px;
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    color: #222;
+}
+
+.card:hover {
+    background: #eeeeee;
+}
+
+.card h2 {
+    margin-top: 0;
+}
+
+/* Group page */
 .group-section {
     margin-bottom: 42px;
 }
@@ -1235,6 +1532,70 @@ nav a:hover {
     border-bottom: 1px solid #ddd;
 }
 
+/* Notes / explanation boxes */
+.page-note {
+    background: #f7f7f7;
+    border-left: 4px solid #222;
+    padding: 14px 16px;
+    margin-bottom: 24px;
+    color: #444;
+    line-height: 1.5;
+}
+
+/* Visual bracket page */
+.bracket-container {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(220px, 1fr));
+    gap: 18px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+}
+
+.bracket-round {
+    min-width: 220px;
+}
+
+.bracket-round h3 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.bracket-match {
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+    padding: 12px;
+    margin-bottom: 14px;
+}
+
+.bracket-match-number {
+    color: #777;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.bracket-team {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 8px;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.bracket-winner {
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+.bracket-small-text {
+    margin-top: 6px;
+    color: #666;
+    font-size: 12px;
+}
+
+/* Tables */
 .results-table {
     border-collapse: collapse;
     width: 100%;
@@ -1263,49 +1624,10 @@ nav a:hover {
     background: #e8e8e8;
 }
 
-.cards {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
-}
-
-.card {
-    display: block;
-    padding: 22px;
-    background: #f7f7f7;
-    border: 1px solid #ddd;
-    text-decoration: none;
-    color: #222;
-}
-
-.card:hover {
-    background: #eeeeee;
-}
-
-.card h2 {
-    margin-top: 0;
-}
-
-footer {
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #ddd;
-    color: #666;
-    font-size: 14px;
-}
-
-footer a {
-    color: #0645ad;
-    text-decoration: none;
-}
-
-footer a:hover {
-    text-decoration: underline;
-}
-
 /* DataTables cleanup */
 .dt-container {
     margin-top: 12px;
+    overflow-x: auto;
 }
 
 .dt-search {
@@ -1334,6 +1656,24 @@ footer a:hover {
     margin-left: 4px;
 }
 
+/* Footer */
+footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+    color: #666;
+    font-size: 14px;
+}
+
+footer a {
+    color: #0645ad;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
 /* Mobile layout */
 @media (max-width: 800px) {
     main {
@@ -1358,13 +1698,22 @@ footer a:hover {
         font-size: 32px;
     }
 
+    .bracket-container {
+        grid-template-columns: repeat(5, 220px);
+    }
+
     .results-table {
         font-size: 12px;
+        min-width: 700px;
     }
 
     .results-table th,
     .results-table td {
         padding: 6px;
+    }
+
+    .page-note {
+        padding: 12px 14px;
     }
 }
 """

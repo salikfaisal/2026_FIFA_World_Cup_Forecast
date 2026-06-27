@@ -45,6 +45,7 @@ nav a:hover {
     margin-bottom: 32px;
 }
 
+/* Homepage champion card */
 .champion-card-section {
     margin-bottom: 28px;
 }
@@ -77,6 +78,31 @@ nav a:hover {
     margin-bottom: 0;
 }
 
+/* Homepage cards */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    display: block;
+    padding: 22px;
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    color: #222;
+}
+
+.card:hover {
+    background: #eeeeee;
+}
+
+.card h2 {
+    margin-top: 0;
+}
+
+/* Group page */
 .group-section {
     margin-bottom: 42px;
 }
@@ -87,6 +113,70 @@ nav a:hover {
     border-bottom: 1px solid #ddd;
 }
 
+/* Notes / explanation boxes */
+.page-note {
+    background: #f7f7f7;
+    border-left: 4px solid #222;
+    padding: 14px 16px;
+    margin-bottom: 24px;
+    color: #444;
+    line-height: 1.5;
+}
+
+/* Visual bracket page */
+.bracket-container {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(220px, 1fr));
+    gap: 18px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+}
+
+.bracket-round {
+    min-width: 220px;
+}
+
+.bracket-round h3 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.bracket-match {
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+    padding: 12px;
+    margin-bottom: 14px;
+}
+
+.bracket-match-number {
+    color: #777;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.bracket-team {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 8px;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.bracket-winner {
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+.bracket-small-text {
+    margin-top: 6px;
+    color: #666;
+    font-size: 12px;
+}
+
+/* Tables */
 .results-table {
     border-collapse: collapse;
     width: 100%;
@@ -115,49 +205,10 @@ nav a:hover {
     background: #e8e8e8;
 }
 
-.cards {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 20px;
-}
-
-.card {
-    display: block;
-    padding: 22px;
-    background: #f7f7f7;
-    border: 1px solid #ddd;
-    text-decoration: none;
-    color: #222;
-}
-
-.card:hover {
-    background: #eeeeee;
-}
-
-.card h2 {
-    margin-top: 0;
-}
-
-footer {
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #ddd;
-    color: #666;
-    font-size: 14px;
-}
-
-footer a {
-    color: #0645ad;
-    text-decoration: none;
-}
-
-footer a:hover {
-    text-decoration: underline;
-}
-
 /* DataTables cleanup */
 .dt-container {
     margin-top: 12px;
+    overflow-x: auto;
 }
 
 .dt-search {
@@ -186,6 +237,24 @@ footer a:hover {
     margin-left: 4px;
 }
 
+/* Footer */
+footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+    color: #666;
+    font-size: 14px;
+}
+
+footer a {
+    color: #0645ad;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
 /* Mobile layout */
 @media (max-width: 800px) {
     main {
@@ -210,12 +279,21 @@ footer a:hover {
         font-size: 32px;
     }
 
+    .bracket-container {
+        grid-template-columns: repeat(5, 220px);
+    }
+
     .results-table {
         font-size: 12px;
+        min-width: 700px;
     }
 
     .results-table th,
     .results-table td {
         padding: 6px;
+    }
+
+    .page-note {
+        padding: 12px 14px;
     }
 }
