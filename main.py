@@ -1,10 +1,19 @@
 import time
-
 import pandas as pd
 from get_adjusted_elo_ratings import ratings_df
 import statistics
 import random
 from pathlib import Path
+from datetime import datetime
+import zoneinfo
+
+GITHUB_REPO_URL = "https://github.com/salikfaisal/2026_FIFA_World_Cup_Forecast"
+
+houston_tz = zoneinfo.ZoneInfo("America/Chicago")
+now = datetime.now(houston_tz)
+
+# Format the string to your exact specifications
+LAST_UPDATED = f"{now.strftime('%B %d, %Y, %I:%M %p %Z')}"
 
 # reads Dataframe of world cup matches
 wc_matches_df = pd.read_csv("Match Results.csv")
@@ -760,6 +769,32 @@ group_stage_df.to_csv("Group Stage Simulation Results.csv", index=False, encodin
 
 knockout_stage_df.to_csv("Knockout Stage Simulation Results.csv", index=False, encoding="utf-8-sig")
 
+def build_champion_card(knockout_stage_df):
+    # Creates the homepage card for the most likely World Cup champion.
+
+    champion_row = knockout_stage_df.sort_values(
+        by="Champion",
+        ascending=False
+    ).iloc[0]
+
+    champion_team = champion_row["Team"]
+    champion_probability = champion_row["Champion"]
+
+    champion_team_display = f"{team_flags.get(champion_team, '')} {champion_team}"
+
+    return f"""
+    <section class="champion-card-section">
+        <div class="champion-card">
+            <h2>Most Likely Champion</h2>
+            <p class="champion-team">{champion_team_display}</p>
+            <p class="champion-probability">{champion_probability * 100:.1f}%</p>
+            <p class="champion-note">
+                Based on {num_of_simulations:,} tournament simulations.
+            </p>
+        </div>
+    </section>
+    """
+
 team_flags = {
     "Mexico": "🇲🇽",
     "South Africa": "🇿🇦",
@@ -874,7 +909,44 @@ DOCS_FOLDER = Path("docs")
 DOCS_FOLDER.mkdir(exist_ok=True)
 
 
-def create_html_page(title, subtitle, table_html):
+def create_html_page(title, subtitle, body_html, use_datatables=True):
+    # Creates a full HTML page.
+
+    datatables_head_html = ""
+
+    if use_datatables:
+        datatables_head_html = """
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.min.css">
+    <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
+"""
+
+    datatables_script_html = ""
+
+    if use_datatables:
+        datatables_script_html = """
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".searchable-table").forEach(function(table) {
+                new DataTable(table, {
+                    pageLength: 25,
+                    order: [],
+                    autoWidth: false
+                });
+            });
+
+            document.querySelectorAll(".group-table").forEach(function(table) {
+                new DataTable(table, {
+                    paging: false,
+                    searching: false,
+                    info: false,
+                    order: [],
+                    autoWidth: false
+                });
+            });
+        });
+    </script>
+"""
+
     return f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -882,6 +954,7 @@ def create_html_page(title, subtitle, table_html):
     <meta charset="UTF-8">
     <title>{title}</title>
     <link rel="stylesheet" href="style.css">
+    {datatables_head_html}
 </head>
 
 <body>
@@ -892,14 +965,26 @@ def create_html_page(title, subtitle, table_html):
             <a href="index.html">Home</a>
             <a href="group-stage.html">Group Stage</a>
             <a href="knockout-stage.html">Knockout Stage</a>
+            <a href="{GITHUB_REPO_URL}" target="_blank">GitHub</a>
         </nav>
 
         <p class="subtitle">{subtitle}</p>
 
-        <section>
-            {table_html}
-        </section>
+        <p class="last-updated">
+            Last updated: {LAST_UPDATED}
+        </p>
+
+        {body_html}
+
+        <footer>
+            <p>
+                Last updated: {LAST_UPDATED} |
+                <a href="{GITHUB_REPO_URL}" target="_blank">View Methodology on GitHub</a>
+            </p>
+        </footer>
     </main>
+
+    {datatables_script_html}
 </body>
 </html>
 """
@@ -907,19 +992,56 @@ def create_html_page(title, subtitle, table_html):
 
 # Group-stage page
 
-group_display_df = add_flags_to_team_column(group_stage_df)
-group_display_df = format_display_df(group_display_df)
+group_sections_html = ""
 
-group_table_html = group_display_df.to_html(
-    index=False,
-    classes="results-table",
-    border=0
-)
+for group in sorted(group_stage_df["Group"].unique()):
+    single_group_df = group_stage_df[
+        group_stage_df["Group"] == group
+    ].copy()
+
+    single_group_df = single_group_df.sort_values(
+        by=["Average Points", "Average Goal Difference", "1st"],
+        ascending=[False, False, False]
+    ).reset_index(drop=True)
+
+    single_group_df["Group Rank"] = single_group_df.index + 1
+
+    single_group_df = single_group_df[
+        [
+            "Group Rank",
+            "Team",
+            "Average Points",
+            "Average Goal Difference",
+            "1st",
+            "2nd",
+            "3rd",
+            "4th",
+            "Round of 32",
+        ]
+    ]
+
+    group_display_df = add_flags_to_team_column(single_group_df)
+    group_display_df = format_display_df(group_display_df)
+
+    group_table_html = group_display_df.to_html(
+        index=False,
+        classes=["results-table", "group-table"],
+        border=0,
+        escape=False
+    )
+
+    group_sections_html += f"""
+    <section class="group-section">
+        <h2>Group {group}</h2>
+        {group_table_html}
+    </section>
+    """
 
 group_stage_html = create_html_page(
     title="2026 FIFA World Cup Group Stage Forecast",
     subtitle=f"Group-stage averages and advancement chances from {num_of_simulations:,} simulations.",
-    table_html=group_table_html
+    body_html=group_sections_html,
+    use_datatables=True
 )
 
 with open(DOCS_FOLDER / "group-stage.html", "w", encoding="utf-8") as file:
@@ -933,18 +1055,32 @@ knockout_display_df = format_display_df(knockout_display_df)
 
 knockout_table_html = knockout_display_df.to_html(
     index=False,
-    classes="results-table",
-    border=0
+    classes=["results-table", "searchable-table"],
+    border=0,
+    escape=False
 )
+
+knockout_body_html = f"""
+<section>
+    <h2>Knockout Stage Probabilities</h2>
+    {knockout_table_html}
+</section>
+"""
 
 knockout_stage_html = create_html_page(
     title="2026 FIFA World Cup Knockout Stage Forecast",
     subtitle=f"Chances of reaching each knockout round from {num_of_simulations:,} simulations.",
-    table_html=knockout_table_html
+    body_html=knockout_body_html,
+    use_datatables=True
 )
 
 with open(DOCS_FOLDER / "knockout-stage.html", "w", encoding="utf-8") as file:
     file.write(knockout_stage_html)
+
+
+# Index Page
+
+champion_card_html = build_champion_card(knockout_stage_df)
 
 index_html = f"""
 <!DOCTYPE html>
@@ -963,6 +1099,7 @@ index_html = f"""
             <a href="index.html">Home</a>
             <a href="group-stage.html">Group Stage</a>
             <a href="knockout-stage.html">Knockout Stage</a>
+            <a href="{GITHUB_REPO_URL}" target="_blank">Methodology on GitHub</a>
         </nav>
 
         <p class="subtitle">
@@ -970,17 +1107,36 @@ index_html = f"""
             The tournament was simulated {num_of_simulations:,} times.
         </p>
 
+        <p class="last-updated">
+            Last updated: {LAST_UPDATED}
+        </p>
+
+        {champion_card_html}
+
         <section class="cards">
             <a class="card" href="group-stage.html">
                 <h2>Group Stage Forecast</h2>
-                <p>Average points, goal difference, group finish probabilities, and Round of 32 chances.</p>
+                <p>
+                    Average points, goal difference, group finish probabilities,
+                    and Round of 32 chances.
+                </p>
             </a>
 
             <a class="card" href="knockout-stage.html">
                 <h2>Knockout Stage Forecast</h2>
-                <p>Chances of reaching the Round of 32, Round of 16, quarterfinals, semifinals, final, and winning the World Cup.</p>
+                <p>
+                    Chances of reaching the Round of 32, Round of 16,
+                    quarterfinals, semifinals, final, and winning the World Cup.
+                </p>
             </a>
         </section>
+
+        <footer>
+            <p>
+                Last updated: {LAST_UPDATED} |
+                <a href="{GITHUB_REPO_URL}" target="_blank">View Methodology on GitHub</a>
+            </p>
+        </footer>
     </main>
 </body>
 </html>
@@ -989,6 +1145,7 @@ index_html = f"""
 with open(DOCS_FOLDER / "index.html", "w", encoding="utf-8") as file:
     file.write(index_html)
 
+#CSS
 css = """
 body {
     font-family: Arial, sans-serif;
@@ -1026,7 +1183,56 @@ nav a:hover {
 
 .subtitle {
     color: #555;
+    margin-bottom: 8px;
+}
+
+.last-updated {
+    color: #777;
+    font-size: 14px;
+    margin-top: 0;
     margin-bottom: 32px;
+}
+
+.champion-card-section {
+    margin-bottom: 28px;
+}
+
+.champion-card {
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+    padding: 24px;
+}
+
+.champion-card h2 {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.champion-team {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+}
+
+.champion-probability {
+    font-size: 40px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.champion-note {
+    color: #666;
+    margin-bottom: 0;
+}
+
+.group-section {
+    margin-bottom: 42px;
+}
+
+.group-section h2 {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ddd;
 }
 
 .results-table {
@@ -1078,6 +1284,88 @@ nav a:hover {
 
 .card h2 {
     margin-top: 0;
+}
+
+footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+    color: #666;
+    font-size: 14px;
+}
+
+footer a {
+    color: #0645ad;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* DataTables cleanup */
+.dt-container {
+    margin-top: 12px;
+}
+
+.dt-search {
+    margin-bottom: 12px;
+}
+
+.dt-search input {
+    padding: 6px 8px;
+    border: 1px solid #bbb;
+}
+
+.dt-length select {
+    padding: 4px;
+}
+
+.dt-info {
+    color: #666;
+    font-size: 13px;
+}
+
+.dt-paging {
+    margin-top: 12px;
+}
+
+.dt-paging button {
+    margin-left: 4px;
+}
+
+/* Mobile layout */
+@media (max-width: 800px) {
+    main {
+        margin: 0;
+        padding: 18px;
+    }
+
+    nav a {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .champion-team {
+        font-size: 22px;
+    }
+
+    .champion-probability {
+        font-size: 32px;
+    }
+
+    .results-table {
+        font-size: 12px;
+    }
+
+    .results-table th,
+    .results-table td {
+        padding: 6px;
+    }
 }
 """
 

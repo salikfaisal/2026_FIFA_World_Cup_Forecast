@@ -35,7 +35,56 @@ nav a:hover {
 
 .subtitle {
     color: #555;
+    margin-bottom: 8px;
+}
+
+.last-updated {
+    color: #777;
+    font-size: 14px;
+    margin-top: 0;
     margin-bottom: 32px;
+}
+
+.champion-card-section {
+    margin-bottom: 28px;
+}
+
+.champion-card {
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+    padding: 24px;
+}
+
+.champion-card h2 {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.champion-team {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+}
+
+.champion-probability {
+    font-size: 40px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.champion-note {
+    color: #666;
+    margin-bottom: 0;
+}
+
+.group-section {
+    margin-bottom: 42px;
+}
+
+.group-section h2 {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #ddd;
 }
 
 .results-table {
@@ -87,4 +136,86 @@ nav a:hover {
 
 .card h2 {
     margin-top: 0;
+}
+
+footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+    color: #666;
+    font-size: 14px;
+}
+
+footer a {
+    color: #0645ad;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* DataTables cleanup */
+.dt-container {
+    margin-top: 12px;
+}
+
+.dt-search {
+    margin-bottom: 12px;
+}
+
+.dt-search input {
+    padding: 6px 8px;
+    border: 1px solid #bbb;
+}
+
+.dt-length select {
+    padding: 4px;
+}
+
+.dt-info {
+    color: #666;
+    font-size: 13px;
+}
+
+.dt-paging {
+    margin-top: 12px;
+}
+
+.dt-paging button {
+    margin-left: 4px;
+}
+
+/* Mobile layout */
+@media (max-width: 800px) {
+    main {
+        margin: 0;
+        padding: 18px;
+    }
+
+    nav a {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .champion-team {
+        font-size: 22px;
+    }
+
+    .champion-probability {
+        font-size: 32px;
+    }
+
+    .results-table {
+        font-size: 12px;
+    }
+
+    .results-table th,
+    .results-table td {
+        padding: 6px;
+    }
 }
