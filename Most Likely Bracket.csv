@@ -1,32 +1,32 @@
 ﻿Round,Match,Team 1,Team 2,Most Likely Winner,Matchup Frequency,Winner Given Matchup
-Round of 32,1,Germany,Paraguay,Germany,1.0,0.7391
-Round of 32,2,France,Sweden,France,1.0,0.8563
-Round of 32,3,South Africa,Canada,Canada,1.0,0.7346
-Round of 32,4,Netherlands,Morocco,Netherlands,1.0,0.6303
-Round of 32,5,Portugal,Croatia,Portugal,0.3112,0.650706940874036
-Round of 32,6,Spain,Austria,Spain,0.7252,0.8263927192498621
-Round of 32,7,United States,Bosnia & Herzegovina,United States,1.0,0.7998
-Round of 32,8,Belgium,Senegal,Belgium,0.4053,0.5672341475450283
-Round of 32,9,Brazil,Japan,Brazil,1.0,0.6861
-Round of 32,10,Côte d'Ivoire,Norway,Norway,1.0,0.6547
-Round of 32,11,Mexico,Ecuador,Mexico,0.9998,0.6108221644328866
-Round of 32,12,England,Senegal,England,0.4464,0.722894265232975
-Round of 32,13,Argentina,Cabo Verde,Argentina,1.0,0.9323
-Round of 32,14,Australia,Egypt,Australia,1.0,0.513
-Round of 32,15,Switzerland,Iran,Switzerland,0.8842,0.7084370052024429
-Round of 32,16,Colombia,Ghana,Colombia,0.3695,0.8292286874154262
-Round of 16,1,Germany,France,France,0.631,0.6675118858954041
-Round of 16,2,Canada,Netherlands,Netherlands,0.4614,0.759211096662332
-Round of 16,3,Portugal,Spain,Spain,0.3061,0.6363933355112709
-Round of 16,4,United States,Belgium,Belgium,0.5046,0.5418152992469283
-Round of 16,5,Brazil,Norway,Brazil,0.4519,0.6423987607877849
-Round of 16,6,Mexico,England,England,0.421,0.6425178147268409
-Round of 16,7,Argentina,Australia,Argentina,0.4775,0.8691099476439791
-Round of 16,8,Switzerland,Colombia,Colombia,0.2767,0.5587278641127575
-Quarterfinals,1,France,Netherlands,France,0.3077,0.6473838154046149
-Quarterfinals,2,Spain,United States,Spain,0.243,0.7888888888888889
-Quarterfinals,3,Brazil,England,England,0.2203,0.5201997276441217
-Quarterfinals,4,Argentina,Switzerland,Argentina,0.2475,0.7341414141414141
-Semifinals,1,France,Spain,Spain,0.2095,0.5398568019093078
-Semifinals,2,England,Argentina,Argentina,0.1699,0.5650382577987051
-Final,1,Spain,Argentina,Spain,0.1133,0.556045895851721
+Round of 32,1,Germany,Paraguay,Germany,1.0,0.7478
+Round of 32,2,France,Sweden,France,1.0,0.851
+Round of 32,3,South Africa,Canada,Canada,1.0,0.7352
+Round of 32,4,Netherlands,Morocco,Netherlands,1.0,0.6391
+Round of 32,5,Portugal,Croatia,Portugal,1.0,0.6659
+Round of 32,6,Spain,Austria,Spain,1.0,0.8263
+Round of 32,7,United States,Bosnia & Herzegovina,United States,1.0,0.8006
+Round of 32,8,Belgium,Senegal,Belgium,1.0,0.5609
+Round of 32,9,Brazil,Japan,Brazil,1.0,0.687
+Round of 32,10,Côte d'Ivoire,Norway,Norway,1.0,0.6661
+Round of 32,11,Mexico,Ecuador,Mexico,1.0,0.5898
+Round of 32,12,England,DR Congo,England,1.0,0.8568
+Round of 32,13,Argentina,Cabo Verde,Argentina,1.0,0.9301
+Round of 32,14,Australia,Egypt,Australia,1.0,0.501
+Round of 32,15,Switzerland,Algeria,Switzerland,1.0,0.6155
+Round of 32,16,Colombia,Ghana,Colombia,1.0,0.8112
+Round of 16,1,Germany,France,France,0.6346,0.6511188150015758
+Round of 16,2,Canada,Netherlands,Netherlands,0.4647,0.7619969873036367
+Round of 16,3,Portugal,Spain,Spain,0.5499,0.6492089470812875
+Round of 16,4,United States,Belgium,Belgium,0.4513,0.5484156880124086
+Round of 16,5,Brazil,Norway,Brazil,0.4563,0.6392724085031777
+Round of 16,6,Mexico,England,England,0.5062,0.6365073093638878
+Round of 16,7,Argentina,Australia,Argentina,0.4661,0.8719158978759923
+Round of 16,8,Switzerland,Colombia,Colombia,0.4984,0.5636035313001605
+Quarterfinals,1,France,Netherlands,France,0.3016,0.6535145888594165
+Quarterfinals,2,Spain,United States,Spain,0.2269,0.7734684883208461
+Quarterfinals,3,Brazil,England,England,0.2744,0.5386297376093294
+Quarterfinals,4,Argentina,Colombia,Argentina,0.4016,0.703187250996016
+Semifinals,1,France,Spain,Spain,0.1981,0.5386168601716305
+Semifinals,2,England,Argentina,Argentina,0.215,0.5446511627906977
+Final,1,Spain,Argentina,Spain,0.1093,0.5443732845379688
